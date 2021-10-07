@@ -3,8 +3,10 @@
 require_once 'vendor/autoload.php';
 
 $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
+    $r->addRoute('GET', '/', 'ToDoController@index');
     $r->addRoute('GET', '/todos', 'ToDoController@index');
     $r->addRoute('POST', '/todos/create', 'ToDoController@create');
+    $r->addRoute('POST', '/todos/{id}', 'ToDoController@delete');
 });
 
 // Fetch method and URI from somewhere
@@ -35,6 +37,6 @@ switch ($routeInfo[0]) {
         $controller = 'App\Controllers\\' . $controller;
 
         $controller = new $controller();
-        $controller->$method();
+        $controller->$method($vars);
         break;
 }

@@ -8,17 +8,14 @@ class ToDoItemCollection
 {
     private array $toDoItems = [];
 
-    public function __construct(array $toDoItems)
+    public function __construct(array $toDoItems = [])
     {
-        foreach ($toDoItems as $item)
-        {
-            $this->add($item);
-        }
+        foreach ($toDoItems as $item) $this->add($item);
     }
 
     public function add(ToDoItem $item): void
     {
-        $this->toDoItems[] = $item;
+        $this->toDoItems[$item->getId()] = $item;
     }
 
     public function getToDoItems(): array

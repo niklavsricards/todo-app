@@ -2,38 +2,54 @@
 
 namespace App\Controllers;
 
-use App\Models\Collections\ToDoItemCollection;
 use App\Models\ToDoItem;
-use League\Csv\Reader;
-use League\Csv\Writer;
+use App\Repositories\CsvToDoRepository;
+use App\Repositories\MySqlToDoRepository;
+use App\Repositories\ToDoRepository;
+use Ramsey\Uuid\Uuid;
 
 class ToDoController
 {
+    private ToDoRepository $toDoRepository;
+
+    public function __construct()
+    {
+        //$this->toDoRepository = new CsvToDoRepository();
+        $this->toDoRepository = new MySqlToDoRepository();
+    }
+
     public function index(): void
     {
-        $itemsFromFile = iterator_to_array(Reader::createFromPath('files/todoitems.csv', 'r')
-        ->getRecords());
-
-        $items = [];
-
-        foreach ($itemsFromFile as $item)
-        {
-            $items[] = new ToDoItem($item[0]);
-        }
-
-        $toDoItems = new ToDoItemCollection($items);
+        $toDoItems = $this->toDoRepository->getAll();
 
         require_once 'app/Views/index.template.php';
     }
 
     public function create(): void
     {
-        $writer = Writer::createFromPath('files/todoitems.csv', 'a+');
+        $item = new ToDoItem(
+            Uuid::uuid4(),
+            $_POST['title']
+        );
 
-        $writer->insertOne([
-            $_POST['toDoText']
-        ]);
+        $this->toDoRepository->save($item);
 
         header('Location: /todos');
+    }
+
+    public function delete(array $vars): void
+    {
+        $id = $vars['id'] ?? null;
+
+        if ($id == null) header('Location: /');
+
+        $task = $this->toDoRepository->getOne($id);
+
+        if ($task !== null)
+        {
+            $this->toDoRepository->delete($task);
+        }
+
+        header('Location: /');
     }
 }
