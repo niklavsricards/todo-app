@@ -2,11 +2,19 @@
 
 require_once 'vendor/autoload.php';
 
+session_start();
+
 $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/', 'ToDoController@index');
     $r->addRoute('GET', '/todos', 'ToDoController@index');
     $r->addRoute('POST', '/todos/create', 'ToDoController@create');
     $r->addRoute('POST', '/todos/{id}', 'ToDoController@delete');
+    $r->addRoute('GET', '/users', 'UsersController@index');
+    $r->addRoute('GET', '/login', 'AuthController@loginView');
+    $r->addRoute('GET', '/register', 'AuthController@registerView');
+    $r->addRoute('POST', '/login', 'AuthController@login');
+    $r->addRoute('POST', '/register', 'AuthController@register');
+    $r->addRoute('GET', '/logout', 'AuthController@logout');
 });
 
 // Fetch method and URI from somewhere
