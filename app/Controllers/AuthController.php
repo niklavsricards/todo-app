@@ -31,13 +31,12 @@ class AuthController
         }
 
         if (count($errors) == 0) {
-            $password = md5($password);
-            $check = $this->usersRepository->loginAttempt($email, $password);
+            $check = $this->usersRepository->loginAttempt($email);
         }
 
-        if ($check) {
+        if ($check && password_verify($password, $check->getPasswordHash())) {
             $_SESSION['loggedIn'] = true;
-            $_SESSION['email'] = $check->getEmail();
+            $_SESSION['user_id'] = $check->getId();
             header('Location: /todos');
         } else {
             array_push($errors, "E-mail and/or password is not correct");
@@ -72,11 +71,11 @@ class AuthController
         }
 
         if (count($errors) == 0) {
-            $password = md5($password1);
+            $password = password_hash($password1, PASSWORD_BCRYPT);
             $this->usersRepository->register($user, $password);
 
             $_SESSION['loggedIn'] = true;
-            $_SESSION['email'] = $user->getEmail();
+            $_SESSION['user_id'] = $user->getId();
 
             header('Location: /todos');
         } else {

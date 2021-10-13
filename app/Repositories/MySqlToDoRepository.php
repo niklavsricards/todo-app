@@ -21,20 +21,22 @@ class MySqlToDoRepository implements ToDoRepository
 
     public function save(ToDoItem $toDoItem): void
     {
-        $statement = $this->pdo->prepare('INSERT INTO to_do_items (id, todo)
-        VALUE (:id, :todo)');
+        $statement = $this->pdo->prepare('INSERT INTO to_do_items (id, todo, user_id)
+        VALUE (:id, :todo, :user_id)');
 
         $statement->bindValue(':id', $toDoItem->getId());
         $statement->bindValue(':todo', $toDoItem->getTitle());
+        $statement->bindValue(':user_id', $toDoItem->getUserId());
 
         $statement->execute();
     }
 
-    public function getAll(): ToDoItemCollection
+    public function getAll($user_id): ToDoItemCollection
     {
         $collection = new ToDoItemCollection();
 
-        $statement = $this->pdo->prepare('SELECT * FROM to_do_items');
+        $statement = $this->pdo->prepare('SELECT * FROM to_do_items WHERE user_id = :user_id');
+        $statement->bindValue(':user_id', $user_id);
         $statement->execute();
 
         $data = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -43,7 +45,8 @@ class MySqlToDoRepository implements ToDoRepository
         {
             $collection->add(new ToDoItem(
                 $item['id'],
-                $item['todo']
+                $item['todo'],
+                $item['user_id']
             ));
         }
 
@@ -69,7 +72,8 @@ class MySqlToDoRepository implements ToDoRepository
 
         return new ToDoItem(
             $item['id'],
-            $item['todo']
+            $item['todo'],
+            $item['user_id']
         );
     }
 }

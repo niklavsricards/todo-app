@@ -70,12 +70,10 @@ class MySqlUsersRepository implements UsersRepository
         $statement->execute();
     }
 
-    public function loginAttempt(string $email, string $password): ?User
+    public function loginAttempt(string $email): ?User
     {
-        $statement = $this->pdo->prepare('SELECT * FROM users WHERE email = :email 
-                      AND password = :password LIMIT 1');
+        $statement = $this->pdo->prepare('SELECT * FROM users WHERE email = :email LIMIT 1');
         $statement->bindValue(':email', $email);
-        $statement->bindValue(':password', $password);
         $statement->execute();
 
         $result = $statement->fetch(PDO::FETCH_ASSOC);
@@ -84,7 +82,8 @@ class MySqlUsersRepository implements UsersRepository
             return new User(
                 $result['id'],
                 $result['name'],
-                $result['email']
+                $result['email'],
+                $result['password']
             );
         } else {
             return null;

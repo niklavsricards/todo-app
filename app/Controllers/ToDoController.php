@@ -20,16 +20,20 @@ class ToDoController
 
     public function index(): void
     {
-        $toDoItems = $this->toDoRepository->getAll();
-
-        require_once 'app/Views/index.template.php';
+        if (isset($_SESSION['loggedIn'])) {
+            $toDoItems = $this->toDoRepository->getAll($_SESSION['user_id']);
+            require_once 'app/Views/index.template.php';
+        } else {
+            header('Location: /login');
+        }
     }
 
     public function create(): void
     {
         $item = new ToDoItem(
             Uuid::uuid4(),
-            $_POST['title']
+            $_POST['title'],
+            $_SESSION['user_id']
         );
 
         $this->toDoRepository->save($item);

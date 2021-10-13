@@ -8,7 +8,7 @@ use App\Models\ToDoItem;
 interface ToDoRepository
 {
     public function save(ToDoItem $toDoItem): void;
-    public function getAll(): ToDoItemCollection;
+    public function getAll($user_id): ToDoItemCollection;
     public function delete(ToDoItem $toDoItem): void;
     public function getOne(string $id): ?ToDoItem;
 }
