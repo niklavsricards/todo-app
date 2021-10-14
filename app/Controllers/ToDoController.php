@@ -6,6 +6,7 @@ use App\Models\ToDoItem;
 use App\Repositories\CsvToDoRepository;
 use App\Repositories\MySqlToDoRepository;
 use App\Repositories\ToDoRepository;
+use App\View;
 use Ramsey\Uuid\Uuid;
 
 class ToDoController
@@ -18,14 +19,20 @@ class ToDoController
         $this->toDoRepository = new MySqlToDoRepository();
     }
 
-    public function index(): void
+    public function index(): View
     {
-        if (isset($_SESSION['loggedIn'])) {
+        $user = $_SESSION['user_id'] ?? '';
+        $toDoItems = $this->toDoRepository->getAll($user);
+        return new View('index.twig', [
+            'toDoItems' => $toDoItems,
+        ]);
+
+       /* if (isset($_SESSION['loggedIn'])) {
             $toDoItems = $this->toDoRepository->getAll($_SESSION['user_id']);
-            require_once 'app/Views/index.template.php';
+
         } else {
             header('Location: /login');
-        }
+        }*/
     }
 
     public function create(): void

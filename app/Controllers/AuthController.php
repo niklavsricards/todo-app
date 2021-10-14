@@ -37,6 +37,7 @@ class AuthController
         if ($check && password_verify($password, $check->getPasswordHash())) {
             $_SESSION['loggedIn'] = true;
             $_SESSION['user_id'] = $check->getId();
+            $_SESSION['name'] = $check->getName();
             header('Location: /todos');
         } else {
             array_push($errors, "E-mail and/or password is not correct");
@@ -76,6 +77,7 @@ class AuthController
 
             $_SESSION['loggedIn'] = true;
             $_SESSION['user_id'] = $user->getId();
+            $_SESSION['name'] = $user->getName();
 
             header('Location: /todos');
         } else {

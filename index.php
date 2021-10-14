@@ -1,5 +1,9 @@
 <?php
 
+use App\View;
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
+
 require_once 'vendor/autoload.php';
 
 session_start();
@@ -29,6 +33,10 @@ if (false !== $pos = strpos($uri, '?')) {
 $uri = rawurldecode($uri);
 
 $routeInfo = $dispatcher->dispatch($httpMethod, $uri);
+
+$loader = new FilesystemLoader('app/Views');
+$templateEngine = new Environment($loader, []);
+
 switch ($routeInfo[0]) {
     case FastRoute\Dispatcher::NOT_FOUND:
         // ... 404 Not Found
@@ -45,6 +53,14 @@ switch ($routeInfo[0]) {
         $controller = 'App\Controllers\\' . $controller;
 
         $controller = new $controller();
-        $controller->$method($vars);
+        $response = $controller->$method($vars);
+
+        if ($response instanceof View) {
+            echo $templateEngine->render(
+                $response->getTemplate(),
+                $response->getArgs()
+            );
+        }
+
         break;
 }

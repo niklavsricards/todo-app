@@ -1,4 +1,4 @@
-<?php require_once 'app/Views/partials/header.template.php'; ?>
+<?php require_once 'app/Views/partials/app.twig'; ?>
 
     <form class="w-25 m-5" method="post" action="/login">
         <h4>Sign in</h4>
